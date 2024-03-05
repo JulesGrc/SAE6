@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Dépôts</title>
+    <link rel="stylesheet" href="css/styleHome.css">
+</head>
+<body>
+    <div class="container2">
+        <h1>Liste des Dépôts</h1>
+        <ul class="depots">
+            <li>
+                <h3>Dépôt A</h3>
+                <p>Nombre de paniers à livrer : <span class="paniers">10</span></p>
+            </li>
+            <li>
+                <h3>Dépôt B</h3>
+                <p>Nombre de paniers à livrer : <span class="paniers">15</span></p>
+            </li>
+            <li>
+                <h3>Dépôt C</h3>
+                <p>Nombre de paniers à livrer : <span class="paniers">8</span></p>
+            </li>
+            <div>
+                <a href="arrivee_depot.html" id="arrivee_depot" class="button" disabled>QR code heure d'arrivée</a>
+                <a href="controle_paniers.html" id="controle_paniers" class="button" disabled>Contrôle des paniers livrés</a>
+                <a href="retour_jardins.html" id="retour_jardins" class="button" disabled>Retour aux jardins de Cocagne</a>
+                
+            </div>
+
+        <button onclick="retour()">Retour à la Sélection de Tournée</button>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

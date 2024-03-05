@@ -21,12 +21,33 @@
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
     <script src="html5-qrcode.min.js"></script>
     <script src="qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+
+</head>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sélection de Tournée</title>
+    <link rel="stylesheet" href="css/styleHome.css">
 </head>
 <body>
-    
-    <h1>Jardins de Cocagne</h1>
-    
-   
-    
+    <div class="container2">
+        <h1>Sélection de Tournée</h1>
+        <label for="tournee">Choisissez une tournée :</label>
+        <select id="tournee" onchange="getTournee()">
+            <option value="">-- Sélectionnez une tournée --</option>
+            <option value="1">Tournée 1</option>
+            <option value="2">Tournée 2</option>
+            <option value="3">Tournée 3</option>
+        </select>
+        <div id="result" class="result"></div>
+        <a href="deuxieme_ecran.html" id="deuxiemeEcranBtn" class="button">Suivant</a>
+    </div>
+</div>
+    <script src="script.js"></script>
 </body>
+</html>
+
 </html>
