@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrivée à Dépôt</title>
+    <link rel="manifest" href="manifest.json">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,5 +39,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
     <script src="arrivee_depot.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service worker enregistré avec succès : ', registration.scope);
+                    })
+                    .catch(function(err) {
+                        console.error("Erreur lors de l'enregistrement du service worker : ", err);
+                    });
+            });
+        }
+    </script>
+
 </body>
 </html>
