@@ -26,6 +26,21 @@
 
     <!-- Script pour la sélection de tournée -->
     <script src="script.js"></script>
+
+    <style>
+        /* Ajoutez ici votre style pour l'invite à l'installation */
+        #installPrompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container2">
@@ -53,6 +68,49 @@
         // Si tourneeId existe dans l'URL, mettez à jour le localStorage
         if (tourneeId) {
             updateLocalStorage(tourneeId);
+        }
+
+        // Logique pour détecter beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (event) => {
+            // Empêcher le comportement par défaut de l'événement
+            event.preventDefault();
+            // Afficher l'invite à l'installation
+            showInstallPrompt();
+        });
+
+        // Fonction pour afficher l'invite à l'installation
+        function showInstallPrompt() {
+            var installPrompt = document.createElement('div');
+            installPrompt.id = 'installPrompt';
+            installPrompt.innerHTML = `
+                <p>Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience.</p>
+                <button onclick="installApp()">Installer</button>
+            `;
+            document.body.appendChild(installPrompt);
+        }
+
+        // Fonction pour installer l'application
+        function installApp() {
+            var deferredPrompt = window.deferredPrompt;
+            if (deferredPrompt) {
+                // Afficher la demande d'installation
+                deferredPrompt.prompt();
+                // Attendre que l'utilisateur réponde à la demande
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('L\'utilisateur a accepté l\'installation');
+                    } else {
+                        console.log('L\'utilisateur a refusé l\'installation');
+                    }
+                    // Effacer la référence à l'événement
+                    window.deferredPrompt = null;
+                    // Supprimer l'invite à l'installation de l'interface utilisateur
+                    var installPrompt = document.getElementById('installPrompt');
+                    if (installPrompt) {
+                        installPrompt.remove();
+                    }
+                });
+            }
         }
     </script>
 </body>

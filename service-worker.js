@@ -3,10 +3,11 @@ const urlsToCache = [
   '/',
   'arrivee_depot.html',
   'controle_paniers.html',
-  'retour_jardins.html',
   'css/styleHome.css',
   'script.js',
   'map.html',
+  'deuxieme_ecran.html',
+  'index.html',
   // Ajoutez ici tous les autres fichiers que vous souhaitez mettre en cache
 ];
 
