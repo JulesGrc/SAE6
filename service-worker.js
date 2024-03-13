@@ -23,15 +23,22 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
   // Interception des requêtes réseau
   event.respondWith(
-    caches.match(event.request)
+    // Tentative de récupérer la ressource à partir du réseau
+    fetch(event.request)
       .then(function(response) {
-        // Si la ressource est présente dans le cache, on la renvoie
-        if (response) {
+        // Si la réponse est valide, la mettre en cache pour une utilisation ultérieure
+        if (response && response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME)
+            .then(function(cache) {
+              cache.put(event.request, responseClone);
+            });
           return response;
         }
-
-        // Sinon, on effectue la requête réseau normalement
-        return fetch(event.request);
+      })
+      .catch(function() {
+        // Si la récupération à partir du réseau échoue, renvoyer la version mise en cache
+        return caches.match(event.request);
       })
   );
 });

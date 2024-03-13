@@ -6,12 +6,18 @@
     <title>Liste des Dépôts A Livrer</title>
     <link rel="stylesheet" href="css/styleHome.css">
     <link rel="manifest" href="manifest.json">
+    <script src="script.js"></script>
 </head>
 <body>
     <div class="container2">
+
         <h1>Liste des Dépôts A Livrer</h1>
+        
         <ul class="depots">
         </ul>
+
+        <div id="loader" class="loader"></div>
+
         <div class="nombre-paniers">
             <h2>Nombre de Paniers à Livrer :</h2>
             <ul class="paniers-livrer">
@@ -23,48 +29,51 @@
             <a href="retour_jardins.html" id="retour_jardins" class="button" disabled>Retour aux jardins de Cocagne</a>
         </div>
         <button onclick="retour()">Retour à la Sélection de Tournée</button>
+
+        <a href="map.html" id="deuxiemeEcranBtn" class="button">Map</a>
     </div>
 
-    <script src="script.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service worker enregistré avec succès : ', registration.scope);
-                    })
-                    .catch(function(err) {
-                        console.error("Erreur lors de l'enregistrement du service worker : ", err);
-                    });
-            });
-        }
-
         const tourneeId = localStorage.getItem('tourneeId');
 
         document.addEventListener('DOMContentLoaded', async function(){
-            const depotIds = await getDepotByTournee(tourneeId);
-            const depotsList = document.querySelector('.depots');
-            const paniersLivrerList = document.querySelector('.paniers-livrer');
-
-            const depotsData = await getDepot(depotIds);
-            const nombrePaniers = await getNombrePanierLivrer();
-
-            nombrePaniers.forEach((nombrePaniers) => {
-                const listItem = document.createElement('li');
-                if (nombrePaniers._tournee_id == tourneeId) {
-                    listItem.textContent = `${nombrePaniers._nombre} ${nombrePaniers._produit}`;
-                    paniersLivrerList.appendChild(listItem);
-                }
-            });
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block'; // Afficher la barre de chargement
             
-            depotsData.forEach((depot) => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `<strong>${depot.depotName}</strong> - ${depot.adresse} ${depot.codePostal} ${depot.ville}`;
-                depotsList.appendChild(listItem);
-            });
-        });
-
+            try {
+                const depotIds = await getDepotByTournee(tourneeId);
+                const depotsList = document.querySelector('.depots');
+                const paniersLivrerList = document.querySelector('.paniers-livrer');
         
+                const depotsData = await getDepot(depotIds);
+                const nombrePaniers = await getNombrePanierLivrer();
+        
+                nombrePaniers.forEach((nombrePaniers) => {
+                    const listItem = document.createElement('li');
+                    if (nombrePaniers._tournee_id == tourneeId) {
+                        listItem.textContent = `${nombrePaniers._nombre} ${nombrePaniers._produit}`;
+                        paniersLivrerList.appendChild(listItem);
+                    }
+                });
+                
+                depotsData.forEach((depot) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<strong>${depot.depotName}</strong> - ${depot.adresse} ${depot.codePostal} ${depot.ville}`;
+                    listItem.addEventListener('click', async function() {
+                        const depotCoordonnees = await getDepotCoordonnees(depot.depotId);
+                        // Stockez les coordonnées du dépôt dans localStorage
+                        localStorage.setItem('selectedDepotCoords', JSON.stringify(depotCoordonnees));
+                        // Redirigez l'utilisateur vers map.html
+                        window.location.href = 'map.html';
+                    });
+                    depotsList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Une erreur est survenue :', error);
+            } finally {
+                loader.style.display = 'none'; // Masquer la barre de chargement une fois les données récupérées
+            }
+        });
     </script>
 </body>
 </html>

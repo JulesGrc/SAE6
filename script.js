@@ -1,3 +1,15 @@
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(function(registration) {
+                console.log('Service worker enregistré avec succès : ', registration.scope);
+            })
+            .catch(function(err) {
+                console.error("Erreur lors de l'enregistrement du service worker : ", err);
+            });
+    });
+}
+
 apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl0cGFxcGlrcWFybnZldGljcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQwNDQ3MzUsImV4cCI6MjAxOTYyMDczNX0.4glNGKdXcHAXUyWuO5fpvcmg4oRyH9TvtTZ7OYMkcfc';    
 
 function getTournees() {
@@ -24,8 +36,12 @@ function getTournees() {
         // Ajouter les nouvelles options basées sur les données récupérées
         data.forEach(tournee => {
             const option = document.createElement('option');
-            option.value = tournee.tournee_id; // Assurez-vous d'adapter cette ligne selon la structure de vos données
-            option.textContent = tournee.tournee; // Assurez-vous d'adapter cette ligne selon la structure de vos données
+            option.value = tournee.tournee_id;
+            option.textContent = tournee.tournee;
+            option.style.backgroundColor = tournee.couleur;
+            if (tournee.couleur === '#000000') {
+                option.style.color = '#ffffff';
+            }
             selectTournee.appendChild(option);
         });
     })
@@ -62,9 +78,10 @@ function getDepotByTournee(tourneeId) {
 
 async function getDepot(depotIds) {
     const depots = [];
+    const adressePromises = [];
     for (const depotId of depotIds) {
         try {
-            const depotResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/depots?select=depot,adresse_id&depot_id=eq.${depotId}`, {
+            const depotResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/depots?select=*&depot_id=eq.${depotId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,25 +95,10 @@ async function getDepot(depotIds) {
             if (depotData.length > 0) {
                 const depotName = depotData[0].depot;
                 const adresseId = depotData[0].adresse_id;
-                const adresseResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/adresses?adresse_id=eq.${adresseId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': apikey
-                    }
-                });
-                if (!adresseResponse.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const adresseData = await adresseResponse.json();
-                if (adresseData.length > 0) {
-                    const adresse = adresseData[0].adresse;
-                    const codePostal = adresseData[0].codepostal;
-                    const ville = adresseData[0].ville;
-                    depots.push({ depotName, adresse, codePostal, ville });
-                } else {
-                    throw new Error('Adresse not found');
-                }
+                const depotId = depotData[0].depot_id;
+                adressePromises.push(fetchAdresse(adresseId));
+                depots.push({ depotName, adresseId, depotId });
+                console.log(depots);
             } else {
                 throw new Error('Depot not found');
             }
@@ -104,9 +106,36 @@ async function getDepot(depotIds) {
             console.error('There has been a problem with your fetch operation:', error);
         }
     }
+    const adresseResponses = await Promise.all(adressePromises);
+    for (const adresseResponse of adresseResponses) {
+        if (!adresseResponse.ok) {
+            console.error('Network response was not ok');
+            continue;
+        }
+        const adresseData = await adresseResponse.json();
+        if (adresseData.length > 0) {
+            const adresse = adresseData[0].adresse;
+            const codePostal = adresseData[0].codepostal;
+            const ville = adresseData[0].ville;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).adresse = adresse;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).codePostal = codePostal;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).ville = ville;
+        } else {
+            console.error('Adresse not found');
+        }
+    }
     return depots;
 }
 
+async function fetchAdresse(adresseId) {
+    return fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/adresses?adresse_id=eq.${adresseId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': apikey
+        }
+    });
+}
 
 async function getNombrePanierLivrer(semaine) {
     const weekNumber = getWeekNumber(new Date())[0];
@@ -152,11 +181,55 @@ function getWeekNumber(d) {
 }
 
 function redirectToDeuxiemeEcran() {
-    // Redirection vers le deuxième écran (page deuxieme_ecran.php par exemple)
     window.location.href = "deuxieme_ecran.html";
 }
 
 function retour() {
-    // Redirection vers la page précédente (index.php)
     window.history.back();
+}
+
+async function getDepotCoordonnees(depotId) {
+    try {
+        // Récupérer l'ID de l'adresse associée au dépôt
+        const depotResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/depots?select=adresse_id&depot_id=eq.${depotId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': apikey
+            }
+        });
+        if (!depotResponse.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const depotData = await depotResponse.json();
+        if (depotData.length > 0) {
+            const adresseId = depotData[0].adresse_id;
+
+            // Récupérer les coordonnées de l'adresse à partir de son ID
+            const adresseResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/adresses?adresse_id=eq.${adresseId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': apikey
+                }
+            });
+            if (!adresseResponse.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const adresseData = await adresseResponse.json();
+            if (adresseData.length > 0) {
+                const coordinates = adresseData[0].localisation.coordinates;
+                const latitude = coordinates[1];
+                const longitude = coordinates[0];
+                return { latitude, longitude };
+            } else {
+                throw new Error('Adresse not found');
+            }
+        } else {
+            throw new Error('Depot not found');
+        }
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+        throw error; // Propagate the error
+    }
 }

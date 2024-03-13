@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrivée à Dépôt</title>
     <link rel="manifest" href="manifest.json">
-
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+    <script src="arrivee_depot.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,13 +33,13 @@
     </style>
 </head>
 <body>
+    
     <div id="scanner-container">
         <!-- Le scanner QRCode s'affichera ici -->
     </div>
     <div id="result"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
-    <script src="arrivee_depot.js"></script>
+    
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
