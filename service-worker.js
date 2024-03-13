@@ -6,6 +6,7 @@ const urlsToCache = [
   'retour_jardins.html',
   'css/styleHome.css',
   'script.js',
+  'map.html',
   // Ajoutez ici tous les autres fichiers que vous souhaitez mettre en cache
 ];
 

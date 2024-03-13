@@ -98,7 +98,6 @@ async function getDepot(depotIds) {
                 const depotId = depotData[0].depot_id;
                 adressePromises.push(fetchAdresse(adresseId));
                 depots.push({ depotName, adresseId, depotId });
-                console.log(depots);
             } else {
                 throw new Error('Depot not found');
             }
