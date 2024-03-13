@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrivée à Dépôt</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/styleHome.css">
+    <script src="script.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,6 +49,14 @@
             color: #666;
             margin-top: 10px;
         }
+
+        #buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
@@ -58,7 +69,12 @@
         <div>
             <div id="result"></div>
             <div id="time"></div> <!-- Added div for displaying time -->
+            <div id="buttons">
+                <button onclick="resetScanner()">Reset</button>
+                <button onclick="goBack()">Retour</button>
+            </div>
         </div>
+
     </div>
 
 
@@ -67,6 +83,8 @@
 
     
     <script>
+        let qrScanned = false;
+
         function scanQRCode() {
             const video = document.getElementById('qr-video');
             const resultDiv = document.getElementById('result');
@@ -81,7 +99,7 @@
                     const context = canvas.getContext('2d');
 
                     const scan = () => {
-                        if (video.videoWidth > 0 && video.videoHeight > 0) {
+                        if (!qrScanned && video.videoWidth > 0 && video.videoHeight > 0) {
                             canvas.width = video.videoWidth;
                             canvas.height = video.videoHeight;
                             context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -90,15 +108,15 @@
                             if (code) {
                                 console.log('QR Code detected:', code.data);
                                 const currentTime = new Date().toLocaleString();
-                                resultDiv.innerHTML = 'Livrée à : ';
+                                resultDiv.innerHTML = 'Livrée à : ' + code.data;
                                 timeDiv.innerHTML = currentTime;
-                                
+                                qrScanned = true;
                                 // Storing the current time in localStorage
                                 localStorage.setItem('scanTime', currentTime);
                             }
                         }
                         requestAnimationFrame(scan);
-                    };
+                    }; 
 
                     scan();
                 })
@@ -107,7 +125,20 @@
                 });
         }
 
-        window.addEventListener('load', scanQRCode);
+        function resetScanner() {
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('time').innerHTML = '';
+            localStorage.removeItem('scanTime');
+            qrScanned = false;
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            scanQRCode();
+        });
     </script>
 
 
