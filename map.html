@@ -25,7 +25,7 @@
 
         // Récupération des coordonnées du dépôt depuis localStorage
         var selectedDepotCoords = JSON.parse(localStorage.getItem('selectedDepotCoords'));
-        var endpoint = L.latLng(selectedDepotCoords[0], selectedDepotCoords[1]);
+        var endpoint = L.latLng(selectedDepotCoords.latitude, selectedDepotCoords.longitude);
 
         // Utilisation de la géolocalisation pour obtenir la position actuelle
         map.locate({setView: true, maxZoom: 16});
