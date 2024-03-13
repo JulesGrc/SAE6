@@ -50,6 +50,92 @@ function getTournees() {
     });
 }
 
+function getDepotByTournee(tourneeId) {
+    return fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/distributions?select=depot_id&tournee_id=eq.${tourneeId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': apikey
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Traitement des données récupérées
+        const depotIds = data.map(distribution => distribution.depot_id);
+        console.log(depotIds);
+        return depotIds;
+    })
+    .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+        return []; // Retourne un tableau vide en cas d'erreur
+    });
+}
+
+async function getDepot(depotIds) {
+    const depots = [];
+    const adressePromises = [];
+    for (const depotId of depotIds) {
+        try {
+            const depotResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/depots?select=*&depot_id=eq.${depotId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': apikey
+                }
+            });
+            if (!depotResponse.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const depotData = await depotResponse.json();
+            if (depotData.length > 0) {
+                const depotName = depotData[0].depot;
+                const adresseId = depotData[0].adresse_id;
+                const depotId = depotData[0].depot_id;
+                adressePromises.push(fetchAdresse(adresseId));
+                depots.push({ depotName, adresseId, depotId });
+            } else {
+                throw new Error('Depot not found');
+            }
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+        }
+    }
+    const adresseResponses = await Promise.all(adressePromises);
+    for (const adresseResponse of adresseResponses) {
+        if (!adresseResponse.ok) {
+            console.error('Network response was not ok');
+            continue;
+        }
+        const adresseData = await adresseResponse.json();
+        if (adresseData.length > 0) {
+            const adresse = adresseData[0].adresse;
+            const codePostal = adresseData[0].codepostal;
+            const ville = adresseData[0].ville;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).adresse = adresse;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).codePostal = codePostal;
+            depots.find(depot => depot.adresseId === adresseData[0].adresse_id).ville = ville;
+        } else {
+            console.error('Adresse not found');
+        }
+    }
+    return depots;
+}
+
+async function fetchAdresse(adresseId) {
+    return fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/adresses?adresse_id=eq.${adresseId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': apikey
+        }
+    });
+}
+
 async function getInfoTournee(tourneeId, semaine) {
     try {
         const requestBody = {

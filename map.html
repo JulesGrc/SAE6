@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Itinéraire vers le dépôt</title>
-    <script src="script.js"></script>
-
-    <link rel="stylesheet" href="lib/leaflet.css"/>
-    <script src="lib/leaflet.js"></script>
-
     <link rel="stylesheet" href="css/styleHome.css">
-    
     <link rel="manifest" href="manifest.json">
-    
-    <link rel="stylesheet" href="lib/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css"/>
+    <script src="script.js"></script>
+    <script src="lib/leaflet.js"></script>
+    <link rel="stylesheet" href="lib/leaflet.css"/>
     <script src="lib/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.min.js"></script>
+    <link rel="stylesheet" href="lib/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css"/>
     <style>
         #map {
             height: 400px;
@@ -25,12 +21,15 @@
     <div id="map"></div>
     <a href="arrivee_depot.html" id="arrivee_depot" class="button" disabled>QR code heure d'arrivée</a>
 
+    <button onclick="retour()">Retour</button>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('load', function() {
             // Initialisation de la carte
             var map = L.map('map').setView([48.8566, 2.3522], 13); // Centre sur Paris par défaut
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                crossOrigin: true
             }).addTo(map);
 
             // Récupération des coordonnées du dépôt depuis localStorage
@@ -41,11 +40,11 @@
             map.locate({setView: true, maxZoom: 16});
 
             function onLocationFound(e) {
-                var radius = e.accuracy / 2;
+                var radius = e.accuracy / 2000; // Convertir en kilomètres
                 L.marker(e.latlng).addTo(map)
-                    .bindPopup("Vous êtes dans un rayon de " + radius + " mètres de ce point").openPopup();
-                L.circle(e.latlng, radius).addTo(map);
-
+                    .bindPopup("Vous êtes dans un rayon de " + radius.toFixed(2) + " kilomètres de ce point").openPopup();
+                L.circle(e.latlng, radius * 1000).addTo(map); // Convertir en mètres pour la création du cercle
+            
                 // Tracer l'itinéraire depuis la position actuelle jusqu'au dépôt
                 L.Routing.control({
                     waypoints: [
@@ -54,7 +53,7 @@
                     ],
                     routeWhileDragging: true
                 }).addTo(map);
-            }
+            }            
 
             map.on('locationfound', onLocationFound);
 
