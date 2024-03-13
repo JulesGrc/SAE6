@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -25,30 +24,21 @@
     <script src="qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
 
-</head>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sélection de Tournée</title>
-    <link rel="stylesheet" href="css/styleHome.css">
+    <!-- Script pour la sélection de tournée -->
+    <script src="script.js"></script>
 </head>
 <body>
     <div class="container2">
         <h1>Sélection de Tournée</h1>
         <label for="tournee">Choisissez une tournée :</label>
-        <select id="tournee" onchange="getTournee()">
+        <select id="tournee" onchange="updateLocalStorage(this.value)">
             <option value="">-- Sélectionnez une tournée --</option>
-            <option value="1">Tournée 1</option>
-            <option value="2">Tournée 2</option>
-            <option value="3">Tournée 3</option>
         </select>
         <div id="result" class="result"></div>
-        <a href="deuxieme_ecran.html" id="deuxiemeEcranBtn" class="button">Suivant</a>
+        <a href="deuxieme_ecran.html?" id="deuxiemeEcranBtn" class="button">Suivant</a>
     </div>
-</div>
-    <script src="script.js"></script>
+
+    <!-- Enregistrement du service worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
@@ -61,8 +51,22 @@
                     });
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            getTournees();
+        });
+
+        function updateLocalStorage(tourneeId) {
+            localStorage.setItem('tourneeId', tourneeId);
+        }
+
+        // Récupération des paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tourneeId = urlParams.get('tourneeId');
+        // Si tourneeId existe dans l'URL, mettez à jour le localStorage
+        if (tourneeId) {
+            updateLocalStorage(tourneeId);
+        }
     </script>
 </body>
-</html>
-
 </html>
