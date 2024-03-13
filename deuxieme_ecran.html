@@ -10,26 +10,23 @@
 </head>
 <body>
     <div class="container2">
-
         <h1>Liste des Dépôts A Livrer</h1>
         
-        <ul class="depots">
-        </ul>
+        <ul class="depots"></ul>
 
         <div id="loader" class="loader"></div>
 
         <div class="nombre-paniers">
             <h2>Nombre de Paniers à Livrer :</h2>
-            <ul class="paniers-livrer">
-            </ul>
+            <ul class="paniers-livrer"></ul>
         </div>
+        
         <div>
             <a href="controle_paniers.html" id="controle_paniers" class="button" disabled>Contrôle des paniers livrés</a>
             <a href="retour_jardins.html" id="retour_jardins" class="button" disabled>Retour aux jardins de Cocagne</a>
         </div>
+        
         <button onclick="retour()">Retour à la Sélection de Tournée</button>
-
-        <a href="map.html" id="deuxiemeEcranBtn" class="button">Map</a>
     </div>
 
     <script>
@@ -40,28 +37,39 @@
             loader.style.display = 'block'; // Afficher la barre de chargement
             
             try {
-                const depotIds = await getDepotByTournee(tourneeId);
+                const tourneeInfo = await getInfoTournee(tourneeId, getWeekNumber(new Date())[0]);
                 const depotsList = document.querySelector('.depots');
                 const paniersLivrerList = document.querySelector('.paniers-livrer');
-        
-                const depotsData = await getDepot(depotIds);
-                const nombrePaniers = await getNombrePanierLivrer();
-        
-                nombrePaniers.forEach((nombrePaniers) => {
+
+                tourneeInfo[0].distribution.forEach((depot) => {
                     const listItem = document.createElement('li');
-                    if (nombrePaniers._tournee_id == tourneeId) {
-                        listItem.textContent = `${nombrePaniers._nombre} ${nombrePaniers._produit}`;
-                        paniersLivrerList.appendChild(listItem);
+                    listItem.innerHTML = `<strong>${depot.depot}</strong> - ${depot.adresse} ${depot.codepostal} ${depot.ville}`;
+                    let totalPaniersDepot = 0;
+
+                    // Vérifier si la liste des livraisons est vide
+                    if (depot.livraisons.length > 0) {
+                        // Création d'une sous-liste pour les paniers à livrer
+                        const paniersLivrer = document.createElement('ul');
+                        depot.livraisons.forEach((livraison) => {
+                            const panierItem = document.createElement('li');
+                            panierItem.innerHTML = `<strong>${livraison.count}</strong> ${livraison.panier}`;
+                            paniersLivrer.appendChild(panierItem);
+                            totalPaniersDepot += parseInt(livraison.count); // Ajout du nombre de paniers de cette livraison au total du dépôt
+                        });
+
+                        // Ajout de la sous-liste à l'élément listItem
+                        listItem.appendChild(paniersLivrer);
+                        
+                    } else {
+                        // Si la liste des livraisons est vide, afficher un message approprié
+                        listItem.innerHTML += '<br><em>Pas de panier à livrer</em>';
                     }
-                });
-                
-                depotsData.forEach((depot) => {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<strong>${depot.depotName}</strong> - ${depot.adresse} ${depot.codePostal} ${depot.ville}`;
+
                     listItem.addEventListener('click', async function() {
-                        const depotCoordonnees = await getDepotCoordonnees(depot.depotId);
                         // Stockez les coordonnées du dépôt dans localStorage
-                        localStorage.setItem('selectedDepotCoords', JSON.stringify(depotCoordonnees));
+                        localStorage.setItem('selectedDepotCoords', JSON.stringify({ latitude: depot.st_y, longitude: depot.st_x }));
+                        localStorage.setItem('totalPaniersALivrer', totalPaniersDepot);
+                        console.log('Total paniers à livrer :', totalPaniersDepot);
                         // Redirigez l'utilisateur vers map.html
                         window.location.href = 'map.html';
                     });

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arrivée à Dépôt</title>
     <link rel="manifest" href="manifest.json">
+    <script src="script.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,7 +108,9 @@
                 });
         }
 
-        window.addEventListener('load', scanQRCode);
+        document.addEventListener('DOMContentLoaded', function(){
+            scanQRCode();
+        });
     </script>
 
 
