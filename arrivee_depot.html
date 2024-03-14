@@ -71,7 +71,8 @@
             <div id="result"></div>
             <div id="time"></div> <!-- Added div for displaying time -->
             <div id="buttons">
-                <button onclick="resetScanner()">Reset</button>
+                <button onclick="resetHeureArrivee()">Reset Heure d'arrivée</button>
+                <button onclick="resetScanner()">Relancer Scanner</button>
                 <button onclick="retour()">Retour</button>
             </div>
         </div>
@@ -80,6 +81,10 @@
     
     <script>
         let qrScanned = false;
+
+        document.addEventListener('DOMContentLoaded', function(){
+            scanQRCode();
+        });
 
         function scanQRCode() {
             const video = document.getElementById('qr-video');
@@ -121,7 +126,43 @@
                 });
         }
 
-        window.addEventListener('load', scanQRCode);
+        function resetHeureArrivee() {
+            const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser l'heure d'arrivée ?");
+            if (confirmation) {
+                localStorage.removeItem('scanTime'); // Supprimer l'heure d'arrivée enregistrée
+                const resultDiv = document.getElementById('result');
+                const timeDiv = document.getElementById('time');
+        
+                // Effacer le contenu des éléments HTML
+                resultDiv.textContent = '';
+                timeDiv.textContent = '';
+        
+                alert("L'heure d'arrivée a été réinitialisée avec succès.");
+            }
+        }
+
+        function resetScanner() {
+            qrScanned = false; // Réinitialiser le drapeau indiquant si un code QR a été scanné
+        
+            const video = document.getElementById('qr-video');
+            const resultDiv = document.getElementById('result');
+            const timeDiv = document.getElementById('time');
+        
+            // Arrêter la capture vidéo
+            if (video.srcObject) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        
+            // Effacer le contenu des éléments HTML
+            resultDiv.textContent = '';
+            timeDiv.textContent = '';
+        
+            // Relancer le scanner
+            scanQRCode();
+        }
     </script>
 
 

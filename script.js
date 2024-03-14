@@ -232,3 +232,6 @@ async function getDepotCoordonnees(depotId) {
         throw error; // Propagate the error
     }
 }
+
+
+

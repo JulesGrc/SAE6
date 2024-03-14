@@ -95,6 +95,9 @@ p {
 
     <button id="send-notification-button" disabled>Valider livraison</button> <!-- Bouton désactivé par défaut -->
 
+    <button onclick="resetHeureArrivee()">Reset Heure d'arrivée</button>
+    <button onclick="resetScanner()">Relancer Scanner</button>
+    <br>
     <button onclick="retour()">Retour</button>
 
 
@@ -105,30 +108,30 @@ p {
 
         // Envoyer une requête à votre serveur avec le message comme paramètre
         fetch(`http://localhost:3000/send-notification?message=${messageToSend}`)
-        .then(response => response.json())
-        .then(data => {
-            // Vérifier si une notification doit être envoyée
-            if (data.sendNotification) {
-                // Afficher la notification
-                if ('Notification' in window) {
-                    Notification.requestPermission().then(function(permission) {
-                        if (permission === 'granted') {
-                            var notification = new Notification('Nouvelle notification', {
-                                body: data.message // Utiliser le message renvoyé par le serveur
-                            });
-                        } else {
-                            console.log('Permission de notification non accordée.');
-                        }
-                    });
-                } else {
-                    console.log('Les notifications ne sont pas prises en charge par votre navigateur.');
+            .then(response => response.json())
+            .then(data => {
+                // Vérifier si une notification doit être envoyée
+                if (data.sendNotification) {
+                    // Afficher la notification
+                    if ('Notification' in window) {
+                        Notification.requestPermission().then(function(permission) {
+                            if (permission === 'granted') {
+                                var notification = new Notification('Nouvelle notification', {
+                                    body: data.message // Utiliser le message renvoyé par le serveur
+                                });
+                            } else {
+                                console.log('Permission de notification non accordée.');
+                            }
+                        });
+                    } else {
+                        console.log('Les notifications ne sont pas prises en charge par votre navigateur.');
+                    }
                 }
-            }
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des notifications :', error);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des notifications :', error);
+            });
         });
-    });
 
         let qrCodesScanned = 0; // Variable pour stocker le nombre de QR codes scannés
 
@@ -137,6 +140,10 @@ p {
 
         //associer le nombre de paniers attendus à l'élément HTML
         document.getElementById('totalPaniersALivrer').innerText = nombretotal;
+
+        document.addEventListener('DOMContentLoaded', function(){
+            scanQRCode();
+        });
 
         function scanQRCode() {
             const video = document.getElementById('qr-video');
@@ -194,14 +201,44 @@ p {
                 .catch(err => console.error('Erreur lors de la récupération du flux vidéo : ', err));
         }
 
-        function goBack() {
-            window.history.back();
+        function resetHeureArrivee() {
+            const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser l'heure d'arrivée ?");
+            if (confirmation) {
+                localStorage.removeItem('scanTime'); // Supprimer l'heure d'arrivée enregistrée
+                const resultDiv = document.getElementById('result');
+                const timeDiv = document.getElementById('time');
+        
+                // Effacer le contenu des éléments HTML
+                resultDiv.textContent = '';
+                timeDiv.textContent = '';
+        
+                alert("L'heure d'arrivée a été réinitialisée avec succès.");
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', function(){
+        function resetScanner() {
+            qrScanned = false; // Réinitialiser le drapeau indiquant si un code QR a été scanné
+        
+            const video = document.getElementById('qr-video');
+            const resultDiv = document.getElementById('result');
+            const timeDiv = document.getElementById('time');
+        
+            // Arrêter la capture vidéo
+            if (video.srcObject) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+        
+            // Effacer le contenu des éléments HTML
+            resultDiv.textContent = '';
+            timeDiv.textContent = '';
+        
+            // Relancer le scanner
             scanQRCode();
-        });
-
+        }
+        
     </script>
 </body>
 </html>
