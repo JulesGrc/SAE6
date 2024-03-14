@@ -118,13 +118,13 @@ button:active {
   height: 100%;
   --color: #E1E1E1;
   background-color: #ffffff;
-  
   background-size: 55px 55px;
   max-width: 600px;
-  margin: 50px auto;
-  padding: 20px;
+  margin-top: 10%;
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding-bottom: 20px;
+  padding-top: 10px;
 }
 
 .result {
@@ -180,3 +180,70 @@ button:active {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.select {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.containerselect {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+/* Conteneur principal du scanner */
+.containerduscanner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+
+
+
+/* Boutons du scanner */
+.boutonscanner {
+  margin-left: 20px;
+}
+
+/* Résultat */
+#result {
+  text-align: center;
+  margin-top: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Temps */
+#time {
+  font-size: 16px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* Boutons */
+#buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Règles pour les appareils mobiles */
+@media screen and (max-width: 768px) {
+  .containerduscanner {
+      flex-direction: column;
+      align-items: center;
+  }
+  
+  .boutonscanner {
+      margin-top: 20px;
+      margin-left: 0;
+  }
+}
+

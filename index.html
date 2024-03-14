@@ -38,11 +38,15 @@
 <body>
     <div class="container2">
         <h1>Sélection de Tournée</h1>
-        <label for="tournee">Choisissez une tournée :</label>
-        <select id="tournee" onchange="updateLocalStorage(this.value)">
-            <option value="">-- Sélectionnez une tournée --</option>
-        </select>
-        <a href="deuxieme_ecran.html" id="deuxiemeEcranBtn" class="button">Suivant</a>
+        <div class="containerselect">
+        <div class="select">
+            <label for="tournee">Choisissez une tournée :</label>
+            <select id="tournee" onchange="updateLocalStorage(this.value)">
+                <option value="">Sélectionnez une tournée</option>
+            </select>
+            <a href="deuxieme_ecran.html" id="deuxiemeEcranBtn" class="button">Suivant</a>
+        </div>
+    </div>
     </div>
 
     <!-- Enregistrement du service worker -->
