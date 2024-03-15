@@ -85,7 +85,7 @@ p {
     </div>
     <div id="result"></div>
 
-    <button id="send-notification-button" disabled>Valider livraison</button> <!-- Bouton désactivé par défaut -->
+    <button onclick="retour()" id="send-notification-button" disabled>Valider livraison</button>
 
     <button onclick="resetHeureArrivee()">Reset Heure d'arrivée</button>
     <button onclick="resetScanner()">Relancer Scanner</button>
@@ -105,7 +105,7 @@ p {
                         Notification.requestPermission().then(function(permission) {
                             if (permission === 'granted') {
                                 var notification = new Notification('Nouvelle notification', {
-                                    body: data.message // Utiliser le message renvoyé par le serveur
+                                    body: data.message
                                 });
                             } else {
                                 console.log('Permission de notification non accordée.');
