@@ -17,11 +17,9 @@
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
 
-    <!-- Script pour la sélection de tournée -->
     <script src="script.js"></script>
 
     <style>
-        /* Ajoutez ici votre style pour l'invite à l'installation */
         #installPrompt {
             position: fixed;
             bottom: 20px;
@@ -49,7 +47,6 @@
     </div>
     </div>
 
-    <!-- Enregistrement du service worker -->
     <script>
         document.addEventListener('DOMContentLoaded', function(){
             getTournees();
@@ -59,23 +56,17 @@
             localStorage.setItem('tourneeId', tourneeId);
         }
 
-        // Récupération des paramètres de l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const tourneeId = urlParams.get('tourneeId');
-        // Si tourneeId existe dans l'URL, mettez à jour le localStorage
         if (tourneeId) {
             updateLocalStorage(tourneeId);
         }
 
-        // Logique pour détecter beforeinstallprompt
         window.addEventListener('beforeinstallprompt', (event) => {
-            // Empêcher le comportement par défaut de l'événement
             event.preventDefault();
-            // Afficher l'invite à l'installation
             showInstallPrompt();
         });
 
-        // Fonction pour afficher l'invite à l'installation
         function showInstallPrompt() {
             var installPrompt = document.createElement('div');
             installPrompt.id = 'installPrompt';
@@ -86,22 +77,17 @@
             document.body.appendChild(installPrompt);
         }
 
-        // Fonction pour installer l'application
         function installApp() {
             var deferredPrompt = window.deferredPrompt;
             if (deferredPrompt) {
-                // Afficher la demande d'installation
                 deferredPrompt.prompt();
-                // Attendre que l'utilisateur réponde à la demande
                 deferredPrompt.userChoice.then((choiceResult) => {
                     if (choiceResult.outcome === 'accepted') {
                         console.log('L\'utilisateur a accepté l\'installation');
                     } else {
                         console.log('L\'utilisateur a refusé l\'installation');
                     }
-                    // Effacer la référence à l'événement
                     window.deferredPrompt = null;
-                    // Supprimer l'invite à l'installation de l'interface utilisateur
                     var installPrompt = document.getElementById('installPrompt');
                     if (installPrompt) {
                         installPrompt.remove();

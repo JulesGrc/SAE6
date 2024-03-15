@@ -8,11 +8,9 @@ const urlsToCache = [
   'map.html',
   'deuxieme_ecran.html',
   'index.html',
-  // Ajoutez ici tous les autres fichiers que vous souhaitez mettre en cache
 ];
 
 self.addEventListener('install', function(event) {
-  // Installation du service worker et mise en cache des ressources
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
@@ -23,12 +21,9 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  // Interception des requêtes réseau
   event.respondWith(
-    // Tentative de récupérer la ressource à partir du réseau
     fetch(event.request)
       .then(function(response) {
-        // Si la réponse est valide, la mettre en cache pour une utilisation ultérieure
         if (response && response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME)
@@ -39,7 +34,6 @@ self.addEventListener('fetch', function(event) {
         }
       })
       .catch(function() {
-        // Si la récupération à partir du réseau échoue, renvoyer la version mise en cache
         return caches.match(event.request);
       })
   );

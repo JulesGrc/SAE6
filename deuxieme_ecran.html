@@ -24,20 +24,17 @@
 
         document.addEventListener('DOMContentLoaded', async function(){
             const loader = document.getElementById('loader');
-            loader.style.display = 'block'; // Afficher la barre de chargement
+            loader.style.display = 'block'; 
         
             try {
                 const tourneeInfo = await getInfoTournee(tourneeId, getWeekNumber(new Date())[0]);
                 const depotsList = document.querySelector('.depots');
                 const paniersLivrerList = document.querySelector('.paniers-livrer');
-                // Appel de la fonction pour obtenir les détails des dépôts
                 const depotsData = await getDepot(tourneeInfo[0].distribution.map(depot => depot.depot_id));
                 tourneeInfo[0].distribution.forEach(async (depot) => {
                     const listItem = document.createElement('li');
                     let totalPaniersDepot = 0;
-                    // Vérifier si l'adresse du dépôt est nulle
                     if (depot.adresse == null) {
-                        // Récupérer l'adresse du dépôt en utilisant depotsData
                         listItem.innerHTML = `<strong>${depotsData[depot.ordre-1].depotName}</strong> - ${depotsData[depot.ordre-1].adresse} ${depotsData[depot.ordre-1].codePostal} ${depotsData[depot.ordre-1].ville}`;
                         
                     } else {
@@ -45,7 +42,6 @@
                     }
         
                     if (depot.livraisons.length > 0) {
-                        // Création d'une sous-liste pour les paniers à livrer
                         const paniersLivrer = document.createElement('ul');
                         depot.livraisons.forEach((livraison) => {
                             const panierItem = document.createElement('li');
@@ -54,18 +50,14 @@
                             totalPaniersDepot += parseInt(livraison.count); // Ajout du nombre de paniers de cette livraison au total du dépôt
                         });
         
-                        // Ajout de la sous-liste à l'élément listItem
                         listItem.appendChild(paniersLivrer);
                     } else {
-                        // Si la liste des livraisons est vide, afficher un message approprié
                         listItem.innerHTML += '<br><em>Pas de panier à livrer</em>';
                     }
         
                     listItem.addEventListener('click', async function() {
-                        // Stockez les coordonnées du dépôt dans localStorage
                         localStorage.setItem('selectedDepotCoords', JSON.stringify({ latitude: depot.st_y, longitude: depot.st_x }));
                         localStorage.setItem('totalPaniersALivrer', totalPaniersDepot);
-                        // Redirigez l'utilisateur vers map.html
                         window.location.href = 'map.html';
                     });
                     depotsList.appendChild(listItem);
@@ -73,7 +65,7 @@
             } catch (error) {
                 console.error('Une erreur est survenue :', error);
             } finally {
-                loader.style.display = 'none'; // Masquer la barre de chargement une fois les données récupérées
+                loader.style.display = 'none'; 
             }
         });
         

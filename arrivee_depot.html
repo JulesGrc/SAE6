@@ -129,7 +129,7 @@
         function resetHeureArrivee() {
             const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser l'heure d'arrivée ?");
             if (confirmation) {
-                localStorage.removeItem('scanTime'); // Supprimer l'heure d'arrivée enregistrée
+                localStorage.removeItem('scanTime'); 
                 const resultDiv = document.getElementById('result');
                 const timeDiv = document.getElementById('time');
         
@@ -142,13 +142,12 @@
         }
 
         function resetScanner() {
-            qrScanned = false; // Réinitialiser le drapeau indiquant si un code QR a été scanné
+            qrScanned = false; 
         
             const video = document.getElementById('qr-video');
             const resultDiv = document.getElementById('result');
             const timeDiv = document.getElementById('time');
         
-            // Arrêter la capture vidéo
             if (video.srcObject) {
                 const stream = video.srcObject;
                 const tracks = stream.getTracks();
@@ -156,11 +155,9 @@
                 video.srcObject = null;
             }
         
-            // Effacer le contenu des éléments HTML
             resultDiv.textContent = '';
             timeDiv.textContent = '';
         
-            // Relancer le scanner
             scanQRCode();
         }
     </script>

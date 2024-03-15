@@ -10,32 +10,27 @@
     <script src="lib/jsQR-master/dist/jsQR.js"></script>
 
     <style>
-        /* Style général */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-/* Conteneur principal */
 .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Titre */
 h2 {
     color: #333;
     text-align: center;
 }
 
-/* Paragraphe */
 p {
     color: #666;
 }
 
-/* Vidéo */
 #qr-video {
     width: 100%;
     height: auto;
@@ -43,13 +38,11 @@ p {
     margin: 0 auto;
 }
 
-/* Résultat */
 #result {
     text-align: center;
     margin-top: 20px;
 }
 
-/* Bouton */
 #send-notification-button {
     display: block;
     margin: 20px auto;
@@ -66,7 +59,6 @@ p {
     cursor: not-allowed;
 }
 
-/* Média requérant : Tablettes et téléphones */
 @media screen and (max-width: 768px) {
     .container {
         padding: 10px;
@@ -103,16 +95,12 @@ p {
 
     <script>
         document.getElementById('send-notification-button').addEventListener('click', function() {
-        //message et date pour la notification
         const messageToSend = 'Les paniers ont été livrés avec succès !'+ new Date().toLocaleString();
 
-        // Envoyer une requête à votre serveur avec le message comme paramètre
         fetch(`http://localhost:3000/send-notification?message=${messageToSend}`)
             .then(response => response.json())
             .then(data => {
-                // Vérifier si une notification doit être envoyée
                 if (data.sendNotification) {
-                    // Afficher la notification
                     if ('Notification' in window) {
                         Notification.requestPermission().then(function(permission) {
                             if (permission === 'granted') {
@@ -133,12 +121,11 @@ p {
             });
         });
 
-        let qrCodesScanned = 0; // Variable pour stocker le nombre de QR codes scannés
+        let qrCodesScanned = 0; 
 
         nombretotal = localStorage.getItem('totalPaniersALivrer');
         console.log('Total attendu', nombretotal);
 
-        //associer le nombre de paniers attendus à l'élément HTML
         document.getElementById('totalPaniersALivrer').innerText = nombretotal;
 
         document.addEventListener('DOMContentLoaded', function(){
@@ -171,7 +158,6 @@ p {
                             canvas.height = video.videoHeight;
                             context.drawImage(video, 0, 0, canvas.width, canvas.height);
                             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                            // Scanner le code QR
                             const code = jsQR(imageData.data, imageData.width, imageData.height);
                             
                             if (code) {
@@ -179,24 +165,20 @@ p {
                                 console.log('Total attendu', nombretotal);
 
                                 qrCodesScanned++;
-                                // Afficher le nombre de QR codes scannés
                                 resultDiv.innerHTML = `Nombre de paniers scannés : ${qrCodesScanned}`;
                                 if (qrCodesScanned == nombretotal) {
                                     button.disabled = false;
                                 } else {
-                                    // Délai d'une seconde avant le prochain scan
                                     setTimeout(scan, 1000);
                                 }
                             } else {
-                                // Si aucun code n'a été détecté, continuer le scan
                                 requestAnimationFrame(scan);
                             }
                         } else {
-                            // Si les dimensions de la vidéo ne sont pas disponibles, continuer le scan
                             requestAnimationFrame(scan);
                         }
                     };
-                    scan(); // Lancer le scan initial
+                    scan(); 
                 })
                 .catch(err => console.error('Erreur lors de la récupération du flux vidéo : ', err));
         }
@@ -204,11 +186,10 @@ p {
         function resetHeureArrivee() {
             const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser l'heure d'arrivée ?");
             if (confirmation) {
-                localStorage.removeItem('scanTime'); // Supprimer l'heure d'arrivée enregistrée
+                localStorage.removeItem('scanTime'); 
                 const resultDiv = document.getElementById('result');
                 const timeDiv = document.getElementById('time');
         
-                // Effacer le contenu des éléments HTML
                 resultDiv.textContent = '';
                 timeDiv.textContent = '';
         
@@ -217,13 +198,12 @@ p {
         }
 
         function resetScanner() {
-            qrScanned = false; // Réinitialiser le drapeau indiquant si un code QR a été scanné
+            qrScanned = false; 
         
             const video = document.getElementById('qr-video');
             const resultDiv = document.getElementById('result');
             const timeDiv = document.getElementById('time');
         
-            // Arrêter la capture vidéo
             if (video.srcObject) {
                 const stream = video.srcObject;
                 const tracks = stream.getTracks();
@@ -231,11 +211,9 @@ p {
                 video.srcObject = null;
             }
         
-            // Effacer le contenu des éléments HTML
             resultDiv.textContent = '';
             timeDiv.textContent = '';
         
-            // Relancer le scanner
             scanQRCode();
         }
         

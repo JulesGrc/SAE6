@@ -27,13 +27,9 @@ function getTournees() {
         return response.json();
     })
     .then(data => {
-        // Traitement des données récupérées
         console.log(data);
-        // Mettre à jour la liste déroulante avec les données récupérées
         const selectTournee = document.getElementById('tournee');
-        // Effacer les options actuelles de la liste déroulante
         selectTournee.innerHTML = '<option value="">-- Sélectionnez une tournée --</option>';
-        // Ajouter les nouvelles options basées sur les données récupérées
         data.forEach(tournee => {
             const option = document.createElement('option');
             option.value = tournee.tournee_id;
@@ -65,14 +61,13 @@ function getDepotByTournee(tourneeId) {
         return response.json();
     })
     .then(data => {
-        // Traitement des données récupérées
         const depotIds = data.map(distribution => distribution.depot_id);
         console.log(depotIds);
         return depotIds;
     })
     .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
-        return []; // Retourne un tableau vide en cas d'erreur
+        return []; 
     });
 }
 
@@ -166,16 +161,11 @@ async function getInfoTournee(tourneeId, semaine) {
 
 
 function getWeekNumber(d) {
-    // Copy date so don't modify original
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    // Set to nearest Thursday: current date + 4 - current day number
-    // Make Sunday's day number 7
+    
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-    // Get first day of year
     var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-    // Calculate full weeks to nearest Thursday
     var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-    // Return array of year and week number
     return [weekNo];
 }
 
@@ -189,7 +179,6 @@ function retour() {
 
 async function getDepotCoordonnees(depotId) {
     try {
-        // Récupérer l'ID de l'adresse associée au dépôt
         const depotResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/depots?select=adresse_id&depot_id=eq.${depotId}`, {
             method: 'GET',
             headers: {
@@ -204,7 +193,6 @@ async function getDepotCoordonnees(depotId) {
         if (depotData.length > 0) {
             const adresseId = depotData[0].adresse_id;
 
-            // Récupérer les coordonnées de l'adresse à partir de son ID
             const adresseResponse = await fetch(`https://ytpaqpikqarnveticqhl.supabase.co/rest/v1/adresses?adresse_id=eq.${adresseId}`, {
                 method: 'GET',
                 headers: {
@@ -229,7 +217,7 @@ async function getDepotCoordonnees(depotId) {
         }
     } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
-        throw error; // Propagate the error
+        throw error; 
     }
 }
 

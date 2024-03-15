@@ -27,31 +27,27 @@
 
     <script>
         window.addEventListener('load', function() {
-            // Initialisation de la carte
             var map = L.map('map').setView([48.8566, 2.3522], 13); // Centre sur Paris par défaut
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 crossOrigin: true
             }).addTo(map);
 
-            // Récupération des coordonnées du dépôt depuis localStorage
             var selectedDepotCoords = JSON.parse(localStorage.getItem('selectedDepotCoords'));
             var endpoint = L.latLng(selectedDepotCoords.latitude, selectedDepotCoords.longitude);
 
-            // Utilisation de la géolocalisation pour obtenir la position actuelle
             map.locate({setView: true, maxZoom: 16});
 
             function onLocationFound(e) {
-                var radius = e.accuracy / 2000; // Convertir en kilomètres
+                var radius = e.accuracy / 2000; 
                 L.marker(e.latlng).addTo(map)
                     .bindPopup("Vous êtes dans un rayon de " + radius.toFixed(2) + " kilomètres de ce point").openPopup();
-                L.circle(e.latlng, radius * 1000).addTo(map); // Convertir en mètres pour la création du cercle
+                L.circle(e.latlng, radius * 1000).addTo(map); 
             
-                // Tracer l'itinéraire depuis la position actuelle jusqu'au dépôt
                 L.Routing.control({
                     waypoints: [
-                        e.latlng, // Position actuelle
-                        endpoint // Point d'arrivée (dépôt sélectionné)
+                        e.latlng, 
+                        endpoint 
                     ],
                     routeWhileDragging: true
                 }).addTo(map);
